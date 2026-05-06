@@ -1,0 +1,30 @@
+---
+sync_devices:
+  hostname:
+    commands:
+      - command: "show system information"
+        parser: "textfsm"
+        jpath: "[*].system_name"
+  serial:
+    commands:
+      - command: "show chassis detail"
+        parser: "textfsm"
+        jpath: "[*].chassis_hw_serial_number"
+  device_type:
+    commands:
+      - command: "show version"
+        parser: "textfsm"
+        jpath: "[*].product_name"
+  mgmt_interface:
+    commands:
+      - command: "show system information"
+        parser: "textfsm"
+        jpath: "[*].management_ipv4_addr"
+        post_processor: "{{ (obj | first).split('/')[0] }}"
+  mask_length:
+    commands:
+      - command: "show system information"
+        parser: "textfsm"
+        jpath: "[*].management_ipv4_addr"
+        post_processor: "{{ (obj | first).split('/')[1] }}"
+        iterable_type: "int"
