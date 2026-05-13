@@ -12,9 +12,9 @@ sync_devices:
         jpath: "[*].chassis_hw_serial_number"
   device_type:
     commands:
-      - command: "show version"
+      - command: "show system information"
         parser: "textfsm"
-        jpath: "[*].product_name"
+        jpath: "[*].system_type"
   mgmt_interface:
     commands:
       - command: "show system information"
