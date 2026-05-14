@@ -28,3 +28,9 @@ sync_devices:
         jpath: "[*].management_ipv4_addr"
         post_processor: "{{ (obj | first).split('/')[1] }}"
         iterable_type: "int"
+  platform:
+    commands:
+      - command: "show version"
+        parser: "textfsm"
+        jpath: "[*].timos_version"
+        post_processor: "{{ (obj | first).split('-')[0] }}"
