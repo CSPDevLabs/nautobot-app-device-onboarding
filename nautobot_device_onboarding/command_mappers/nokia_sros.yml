@@ -35,6 +35,12 @@ sync_devices:
         jpath: "[*].timos_version"
         post_processor: "{{ (obj | first).split('-')[0] }}"
 sync_network_data:
+  serial:
+    commands:
+      - command: "info from running state chassis router chassis-number * hardware-data serial-number"
+        parser: "textfsm"
+        jpath: "[*].SERIAL_NUMBER"
+        post_processor: "{{ obj[0] | tojson if obj else '\"\"' }}"
   interfaces:
     root_key: true
     commands:
