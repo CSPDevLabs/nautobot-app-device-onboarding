@@ -34,3 +34,11 @@ sync_devices:
         parser: "textfsm"
         jpath: "[*].timos_version"
         post_processor: "{{ (obj | first).split('-')[0] }}"
+sync_network_data:
+  interfaces:
+    root_key: true
+    commands:
+      - command: "info from running state router interface * oper-state"
+        parser: "textfsm"
+        jpath: "[*].INTERFACE"
+        post_processor: "{% set result={} %}{% for interface in obj %}{{ result.update({interface: {}}) or '' }}{% endfor %}{{ result | tojson }}"
