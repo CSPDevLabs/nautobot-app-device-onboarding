@@ -40,7 +40,25 @@ sync_network_data:
   interfaces:
     root_key: true
     commands:
-      - command: "info from running state router interface * oper-state"
+      - command: "info from running state router * interface * ipv4 primary"
         parser: "textfsm"
         jpath: "[*].interface"
         post_processor: "{% set result={} %}{% for interface in obj %}{{ result.update({interface: {}}) or '' }}{% endfor %}{{ result | tojson }}"
+
+  interfaces__ip_addresses:
+    commands:
+      - command: "info from running state router * interface * ipv4 primary"
+        parser: "textfsm"
+        jpath: "[?interface=='{{ current_key }}'].{ip_address: ip_address}"
+        post_processor: |
+          {%- if obj and obj[0].ip_address -%}
+            {%- set ip = obj[0].ip_address -%}
+            {%- if '/' in ip -%}
+              [{"ip_address": "{{ ip.split('/')[0] }}", "prefix_length": {{ ip.split('/')[1] | int }} }]
+            {%- else -%}
+              [{"ip_address": "{{ ip }}", "prefix_length": 32 }]
+            {%- endif -%}
+          {%- else -%}
+            [{"ip_address": "", "prefix_length": ""}]
+          {%- endif -%}
+
