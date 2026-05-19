@@ -2,38 +2,33 @@
 sync_devices:
   hostname:
     commands:
-      - command: "show system information"
+      - command: "info from running state router \"management\" interface \"management\" ipv4 primary"
         parser: "textfsm"
-        jpath: "[*].system_name"
+        jpath: "[*].hostname"
   serial:
     commands:
-      - command: "show chassis detail"
+      - command: "info from running state chassis router chassis-number * hardware-data serial-number"
         parser: "textfsm"
-        jpath: "[*].chassis_hw_serial_number"
+        jpath: "[*].SERIAL_NUMBER"
+        post_processor: "{{ obj[0] | tojson if obj else '\"\"' }}"
   device_type:
     commands:
-      - command: "show system information"
+      - command: "info from running state system platform"
         parser: "textfsm"
-        jpath: "[*].system_type"
+        jpath: "[*].device_type"
   mgmt_interface:
     commands:
-      - command: "show system information"
+      - command: "info from running state system oper-name"
         parser: "textfsm"
-        jpath: "[*].management_ipv4_addr"
+        jpath: "[*].oper_address"
         post_processor: "{{ (obj | first).split('/')[0] }}"
   mask_length:
     commands:
-      - command: "show system information"
+      - command: "info from running state system oper-name"
         parser: "textfsm"
-        jpath: "[*].management_ipv4_addr"
+        jpath: "[*].oper_address"
         post_processor: "{{ (obj | first).split('/')[1] }}"
         iterable_type: "int"
-  platform:
-    commands:
-      - command: "show version"
-        parser: "textfsm"
-        jpath: "[*].timos_version"
-        post_processor: "{{ (obj | first).split('-')[0] }}"
 sync_network_data:
   serial:
     commands:
