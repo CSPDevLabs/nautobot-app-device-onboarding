@@ -49,7 +49,7 @@ sync_network_data:
     commands:
       - command: "admin show configuration /configure router * interface * ipv4 primary"
         parser: "textfsm"
-        jpath: "[?INTERFACE=='{{ current_key }}'].{ip_address: IP_ADDRESS, prefix_length: PREFIX_LENGTH}"
+        jpath: "[?interface=='{{ current_key }}'].{ip_address: ip_address, prefix_length: prefix_length}"
         post_processor: |
           {%- if obj and obj[0].ip_address -%}
             [{"ip_address": "{{ obj[0].ip_address }}", "prefix_length": {{ obj[0].prefix_length | int }} }]
