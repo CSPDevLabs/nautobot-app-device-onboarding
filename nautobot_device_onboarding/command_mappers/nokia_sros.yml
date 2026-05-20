@@ -60,13 +60,13 @@ sync_network_data:
     commands:
       - command: "admin show configuration /configure router * interface * port"
         parser: "textfsm"
+        jpath: "[?interface=='{{ current_key }}'].port | [0]"
       - command: "info state port * type"
         parser: "textfsm"
-    # Selects the hardware type from command index [1] where the port ID matches the port found in command index [0]
-    jpath: "[1][?port_id == [0][?interface == '{{ current_key }}'].port | [0]].hardware_type"
+        jpath: "[?port_id=='{{ obj }}'].hardware_type | [0]"
     post_processor: |
-      {%- if obj and obj[0] -%}
-        {{ obj[0] | map_interface_type }}
+      {%- if obj -%}
+        {{ obj | map_interface_type }}
       {%- else -%}
         {%- if 'system' in current_key or 'loopback' in current_key -%}
           {{ 'loopback' | map_interface_type }}
@@ -74,6 +74,7 @@ sync_network_data:
           {{ 'virtual' | map_interface_type }}
         {%- endif -%}
       {%- endif -%}
+
 
 
 
