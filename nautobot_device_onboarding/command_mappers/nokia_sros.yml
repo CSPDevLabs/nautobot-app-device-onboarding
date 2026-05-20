@@ -56,5 +56,20 @@ sync_network_data:
           {%- else -%}
             [{"ip_address": "", "prefix_length": ""}]
           {%- endif -%}
+  interfaces__type:
+    commands:
+      - command: "admin show configuration /configure router * interface * port"
+        parser: "textfsm"
+      - command: "info state port * type"
+        parser: "textfsm"
+    # This JPath takes the output list [Command1_Output, Command2_Output], finds the 
+    # Port ID belonging to current_key from Command1, then finds the Type matching that Port ID from Command2.
+    jpath: "[1][?PORT_ID == [0][?INTERFACE == '{{ current_key }}'].PORT | [0]].HARDWARE_TYPE"
+    post_processor: |
+      {%- if obj -%}
+        {{ obj[0] | map_interface_type }}
+      {%- else -%}
+        {{ "virtual" | map_interface_type }}
+      {%- endif -%}
 
 
