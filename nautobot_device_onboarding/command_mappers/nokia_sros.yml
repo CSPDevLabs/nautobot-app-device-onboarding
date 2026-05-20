@@ -19,15 +19,15 @@ sync_devices:
         jpath: "[*].device_type"
   mgmt_interface:
     commands:
-      - command: "info from running state router \"management\" interface \"management\" ipv4 primary"
+      - command: "show system information | match \"Management IPv4\""
         parser: "textfsm"
-        jpath: "[*].oper_address"
+        jpath: "[*].mgmt_ip"
         post_processor: "{{ (obj | first).split('/')[0] if obj else '' }}"
   mask_length:
     commands:
-      - command: "info from running state router \"management\" interface \"management\" ipv4 primary"
+      - command: "show system information | match \"Management IPv4\""
         parser: "textfsm"
-        jpath: "[*].oper_address"
+        jpath: "[*].mgmt_ip"
         post_processor: "{{ (obj | first).split('/')[1] | int if obj and '/' in (obj | first) else 32 }}"
         iterable_type: "int"
 sync_network_data:
