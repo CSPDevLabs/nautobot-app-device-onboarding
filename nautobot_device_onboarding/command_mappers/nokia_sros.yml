@@ -62,14 +62,18 @@ sync_network_data:
         parser: "textfsm"
       - command: "info state port * type"
         parser: "textfsm"
-    # This JPath takes the output list [Command1_Output, Command2_Output], finds the 
-    # Port ID belonging to current_key from Command1, then finds the Type matching that Port ID from Command2.
-    jpath: "[1][?PORT_ID == [0][?INTERFACE == '{{ current_key }}'].PORT | [0]].HARDWARE_TYPE"
+    # Selects the hardware type from command index [1] where the port ID matches the port found in command index [0]
+    jpath: "[1][?port_id == [0][?interface == '{{ current_key }}'].port | [0]].hardware_type"
     post_processor: |
-      {%- if obj -%}
+      {%- if obj and obj[0] -%}
         {{ obj[0] | map_interface_type }}
       {%- else -%}
-        {{ "virtual" | map_interface_type }}
+        {%- if 'system' in current_key or 'loopback' in current_key -%}
+          {{ 'loopback' | map_interface_type }}
+        {%- else -%}
+          {{ 'virtual' | map_interface_type }}
+        {%- endif -%}
       {%- endif -%}
+
 
 
